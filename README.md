@@ -1,4 +1,4 @@
-# Fútbol Miércoles
+# Fútbol LSC · Copa La Cabral
 
 App web de la liga de los miércoles: próximos partidos, resultados, quién jugó, quién hizo los goles, tabla de goleadores y carta de cada jugador con foto.
 
