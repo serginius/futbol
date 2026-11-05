@@ -30,7 +30,7 @@ export default async function Partido({ params }) {
       <MatchCard m={m} byId={byId} link={false} />
       {canKeep(m, viewer) && (
         <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${m.id}/vivo`}>
-          🔴 {m.live ? "Seguir anotando EN VIVO" : "Abrir panel EN VIVO"}
+          {m.live ? "🎙️ Seguí relatando" : "🔴 Arranca la transmisión"}
         </Link>
       )}
       {canKeep(m, viewer) && !m.live && <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />}

@@ -29,7 +29,7 @@ export default async function Perfil() {
       </div>
       {keep && (
         <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${keep.id}/vivo`}>
-          🔴 Sos el planillero del próximo partido: abrir panel EN VIVO
+          📻 Modo relator: ON · Sos el relator del próximo partido
         </Link>
       )}
       {player ? (

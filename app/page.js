@@ -65,7 +65,7 @@ export default async function Home() {
         )}
         {next && canKeep(next, viewer) && (
           <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
-            🔴 {next.live ? "Seguir anotando EN VIVO" : "Abrir panel EN VIVO"}
+            {next.live ? "🎙️ Seguí relatando" : "🎙️ Relatá el partido"}
           </Link>
         )}
       </section>
