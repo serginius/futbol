@@ -1,6 +1,7 @@
 -- Fútbol Miércoles: esquema de base de datos para Supabase.
 -- Pegá TODO este archivo en Supabase > SQL Editor > New query y tocá "Run".
 -- Al final, cambiá el mail del admin por tu Gmail.
+-- Después corré también 02-vivo-videos-copitas.sql (videos, panel EN VIVO, asistencias y faltas).
 
 -- ============ Tablas ============
 

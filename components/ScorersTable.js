@@ -12,7 +12,7 @@ export default function ScorersTable({ players, matches, byId, limit = 0 }) {
     <div className="card tbl-wrap">
       <table>
         <thead>
-          <tr><th></th><th>Jugador</th><th className="n">Goles</th><th className="n">PJ</th>{!limit && <><th className="n">Prom.</th><th className="n">MVP</th></>}</tr>
+          <tr><th></th><th>Jugador</th><th className="n">Goles</th><th className="n">PJ</th>{!limit && <><th className="n">Asist.</th><th className="n">Prom.</th><th className="n">MVP</th></>}</tr>
         </thead>
         <tbody>
           {rows.map((s, i) => {
@@ -23,7 +23,7 @@ export default function ScorersTable({ players, matches, byId, limit = 0 }) {
                 <td><Link className="who" href={`/jugadores/${s.id}`}><Avatar player={byId[s.id]} /><span>{displayName(byId[s.id])}</span></Link></td>
                 <td className="n goals">{s.g}</td>
                 <td className="n">{s.pj}</td>
-                {!limit && <><td className="n">{s.pj ? (s.g / s.pj).toFixed(2) : "–"}</td><td className="n">{s.mvp || "–"}</td></>}
+                {!limit && <><td className="n">{s.a || "–"}</td><td className="n">{s.pj ? (s.g / s.pj).toFixed(2) : "–"}</td><td className="n">{s.mvp || "–"}</td></>}
               </tr>
             );
           })}
