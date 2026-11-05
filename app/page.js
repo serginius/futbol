@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LiveLink from "@/components/LiveLink";
 import MatchCard from "@/components/MatchCard";
 import Confirmados from "@/components/Confirmados";
 import ScorersTable from "@/components/ScorersTable";
@@ -64,9 +65,9 @@ export default async function Home() {
           <Confirmados matchId={next.id} players={next.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
         )}
         {next && canKeep(next, viewer) && (
-          <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
+          <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
             {next.live ? "🎙️ Seguí relatando" : "🎙️ Relatá el partido"}
-          </Link>
+          </LiveLink>
         )}
       </section>
       <section className="sec">

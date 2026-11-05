@@ -201,3 +201,6 @@ details.edit[open] summary{margin-bottom:12px}
 .countdown.go{font-family:var(--font-display);font-weight:800;font-size:24px;color:var(--accent);text-transform:uppercase}
 .card:not(.hero-next) .countdown .cd{background:var(--surface-2);border-color:var(--line)}
 .card:not(.hero-next) .countdown .cd b{color:var(--pitch)}
+.splash{position:fixed;inset:0;z-index:50;background:rgba(11,42,74,.92);display:flex;align-items:center;justify-content:center;padding:16px}
+.splash img{width:min(90vw,520px);border-radius:var(--r);border:4px solid var(--accent);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+@media (prefers-reduced-motion:no-preference){.splash img{animation:grito .35s cubic-bezier(.2,1.6,.4,1)}@keyframes grito{from{transform:scale(.4) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}}

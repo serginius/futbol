@@ -171,7 +171,6 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
       </div>
       {!m.started_at ? (
         <>
-        <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />
         <button type="button" className="btn accent" style={{ justifyContent: "center", fontSize: 20, padding: 16 }} disabled={busy} onClick={start}>🎤 Agarrá el micrófono, que esto es fútbol</button>
         </>
       ) : (
