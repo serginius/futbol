@@ -190,8 +190,9 @@ details.edit[open] summary{margin-bottom:12px}
 .conf-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .conf-list li{display:flex;align-items:center;gap:8px;min-width:0}
 .conf-list .n{font-family:var(--font-display);font-weight:800;color:var(--muted);min-width:18px;text-align:right}
-.nums.ball{font-size:44px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
-@media (prefers-reduced-motion:no-preference){.nums.ball{animation:pique 1.6s cubic-bezier(.3,0,.4,1) infinite}@keyframes pique{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-14px) rotate(180deg)}55%{transform:translateY(-14px) rotate(200deg)}}}
+.nums.ball{font-size:36px;line-height:1;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
+.hero-next .score{margin-top:10px}
+@media (prefers-reduced-motion:no-preference){.nums.ball{animation:pique 1.6s cubic-bezier(.3,0,.4,1) infinite}@keyframes pique{0%,100%{transform:translateY(0) rotate(0)}45%{transform:translateY(-6px) rotate(180deg)}55%{transform:translateY(-6px) rotate(200deg)}}}
 .countdown{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
 .countdown .cd-label{font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
 .countdown .cd{display:flex;flex-direction:column;align-items:center;min-width:52px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:10px;padding:5px 6px}
