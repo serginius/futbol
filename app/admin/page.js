@@ -7,7 +7,7 @@ import { getLeague, upcomingMatches, pendingResults } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Admin · Fútbol Miércoles" };
+export const metadata = { title: "Admin · Fútbol LSC" };
 
 export default async function Admin({ searchParams }) {
   const supabase = await createClient();

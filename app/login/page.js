@@ -1,7 +1,7 @@
 import Crest from "@/components/Crest";
 import GoogleButton from "./GoogleButton";
 
-export const metadata = { title: "Entrar · Fútbol Miércoles" };
+export const metadata = { title: "Entrar · Fútbol LSC" };
 
 const ERRORS = {
   "no-habilitado": ["No pudimos reconocerte con esa cuenta. Avisale al que organiza la liga y te suma en un minuto.", "Ese mail de Google no está habilitado. Fijate de entrar con el mismo Gmail que le diste al organizador."],
@@ -14,7 +14,7 @@ export default async function Login({ searchParams }) {
   return (
     <div className="card login-card">
       <Crest />
-      <h2>Tu espacio en Fútbol Miércoles</h2>
+      <h2>Tu espacio en Fútbol LSC</h2>
       <p className="muted" style={{ margin: 0 }}>Entrá con tu Google y abrí tu espacio: cómo te fue en el último partido, tus goles y tu carta de jugador.</p>
       {err && (
         <div>

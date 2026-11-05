@@ -4,7 +4,7 @@ import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, playedMatches, upcomingMatches, pendingResults } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Partidos · Fútbol Miércoles" };
+export const metadata = { title: "Partidos · Fútbol LSC" };
 
 export default async function Partidos() {
   const supabase = await createClient();

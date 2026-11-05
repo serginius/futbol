@@ -4,7 +4,7 @@ import PlayerForm from "@/components/PlayerForm";
 import { createClient, getViewer } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Mi perfil · Fútbol Miércoles" };
+export const metadata = { title: "Mi perfil · Fútbol LSC" };
 
 export default async function Perfil() {
   const supabase = await createClient();
