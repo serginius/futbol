@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import MatchCard from "@/components/MatchCard";
 import Avatar from "@/components/Avatar";
 import Videos from "@/components/Videos";
+import Confirmados from "@/components/Confirmados";
 import Timeline from "@/components/Timeline";
 import AutoRefresh from "@/components/AutoRefresh";
 import { createClient, getViewer } from "@/lib/supabase/server";
@@ -33,6 +34,9 @@ export default async function Partido({ params }) {
         </Link>
       )}
       {canKeep(m, viewer) && !m.live && <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />}
+      {m.status !== "jugado" && !m.live && (
+        <Confirmados matchId={m.id} players={m.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
+      )}
       <Videos urls={m.videos} />
       <Timeline m={m} byId={byId} />
       <div className="card lineup">
