@@ -1,17 +1,7 @@
-// Arte de la cabecera: sol de mayo re fumado con porro, hoja y el 10.
+// Arte de la cabecera: el 10 tapando medio sol de mayo, que tiene un ojo re fumado y un faso.
 export default function FlagArt() {
-  const leaflets = [
-    [0, 46], [-28, 40], [28, 40], [-58, 32], [58, 32], [-95, 20], [95, 20],
-  ];
   return (
     <div className="flag-art" aria-hidden="true">
-      <svg className="leaf" viewBox="-50 -52 100 70">
-        {leaflets.map(([a, len]) => (
-          <path key={a} transform={`rotate(${a})`}
-            d={`M0 0 C -5 ${-len * 0.35} -4 ${-len * 0.75} 0 ${-len} C 4 ${-len * 0.75} 5 ${-len * 0.35} 0 0 Z`} />
-        ))}
-        <path className="stem" d="M0 0 L0 16" />
-      </svg>
       <span className="ten">10</span>
       <svg className="sun" viewBox="-60 -60 120 120">
         <g className="rays">
@@ -20,17 +10,16 @@ export default function FlagArt() {
           ))}
         </g>
         <circle className="face" r="26" />
-        {/* ojos rojos re fumados, con párpados caídos */}
-        {[-10, 10].map((x) => (
-          <g key={x} transform={`translate(${x} -5)`}>
-            <ellipse rx="7" ry="5.5" fill="#ffd6d6" stroke="#c98a00" strokeWidth=".6" />
-            <ellipse rx="7" ry="5.5" fill="#e53935" opacity=".55" />
-            <path d="M-6 1 L-2 0 M6 2 L2 0.5 M-5 -2 L-2 -1" stroke="#c62828" strokeWidth=".7" />
-            <circle cy="1.5" r="2.4" fill="#3b1d0a" />
-            <path d="M-7 0.6 A7 5.5 0 0 1 7 0.6 Z" fill="#e0a100" />
-            <path d="M-7.6 0.6 Q0 -1.6 7.6 0.6" stroke="#8a5a00" strokeWidth="1.2" fill="none" />
-          </g>
-        ))}
+        {/* un solo ojo, re rojo y castigado */}
+        <g transform="translate(13 -4) scale(1.25)">
+          <ellipse cy="5.5" rx="8" ry="3" fill="#b8742a" opacity=".45" />
+          <ellipse rx="8" ry="6" fill="#ff8a80" stroke="#b71c1c" strokeWidth=".8" />
+          <path d="M-7.5 1 L-3 0.2 L-1.5 1.4 M7.5 2 L3.5 0.8 L2.5 2 M-6 3.5 L-2.5 2.4 M6.5 -1 L3 0 M0 4.8 L0.6 2.8" stroke="#b71c1c" strokeWidth=".75" fill="none" />
+          <circle cy="2.2" r="2.6" fill="#3b1d0a" />
+          <circle cx=".8" cy="1.4" r=".7" fill="#fff" />
+          <path d="M-8.2 1.2 A8 6 0 0 1 8.2 1.2 Z" fill="#d99a00" />
+          <path d="M-8.2 1.2 Q0 -0.6 8.2 1.2" stroke="#7a4a00" strokeWidth="1.4" fill="none" strokeLinecap="round" />
+        </g>
         {/* sonrisa tranqui */}
         <path d="M-9 10 Q-1 15 6 10" stroke="#8a5a00" strokeWidth="1.8" fill="none" strokeLinecap="round" />
         {/* porro */}
