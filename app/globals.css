@@ -185,3 +185,4 @@ input,select,textarea{font:inherit;color:var(--fg);background:var(--surface-2);b
 details.edit summary{cursor:pointer;font-weight:600;list-style:none}
 details.edit summary::-webkit-details-marker{display:none}
 details.edit[open] summary{margin-bottom:12px}
+.aguanta{display:block;width:100%;max-width:420px;margin:0 auto;border-radius:var(--r);border:3px solid var(--accent)}

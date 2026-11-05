@@ -170,7 +170,10 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
         <div className="clock">{minute ? `🔴 EN VIVO · ${minute}'` : "Sin arrancar"}</div>
       </div>
       {!m.started_at ? (
+        <>
+        <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />
         <button type="button" className="btn accent" style={{ justifyContent: "center", fontSize: 20, padding: 16 }} disabled={busy} onClick={start}>▶ Arrancar partido</button>
+        </>
       ) : (
         <>
           {!finishing && !scorer && (
