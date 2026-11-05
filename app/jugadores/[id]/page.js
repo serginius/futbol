@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import MatchCard from "@/components/MatchCard";
 import PlayerStats from "@/components/PlayerStats";
 import Copitas from "@/components/Copitas";
+import InjuryBadge from "@/components/Injury";
+import InjuryForm from "@/components/InjuryForm";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, computeStats, playedMatches } from "@/lib/data";
 import { initials } from "@/lib/format";
@@ -26,11 +28,13 @@ export default async function Jugador({ params }) {
           {p.photo_url ? <img className="big" src={p.photo_url} alt="" /> : <div className="big">{initials(p.name)}</div>}
           <div className="stack" style={{ gap: 6, minWidth: 0 }}>
             <span className="pname">{p.nick || p.name}</span>
+            <InjuryBadge player={p} />
             <span className="muted">{[p.nick ? p.name : "", p.position, p.number ? `#${p.number}` : "", p.foot ? `Pie ${p.foot}` : ""].filter(Boolean).join(" · ")}</span>
             <div className="form" aria-label="Últimos 5 partidos">{s.form.slice(-5).map((r, i) => <i key={i} className={r}>{r}</i>)}</div>
           </div>
         </div>
         <PlayerStats s={s} />
+        {(isMe || viewer.isAdmin) && <InjuryForm player={p} mine={isMe} />}
         {(isMe || viewer.isAdmin) && <div className="actions"><Link className="btn primary" href={isMe ? "/perfil" : `/admin?editar=${p.id}`}>Editar perfil</Link></div>}
       </div>
       <Copitas id={id} players={players} matches={matches} />

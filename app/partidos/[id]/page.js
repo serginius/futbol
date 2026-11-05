@@ -32,6 +32,7 @@ export default async function Partido({ params }) {
           🔴 {m.live ? "Seguir anotando EN VIVO" : "Abrir panel EN VIVO"}
         </Link>
       )}
+      {canKeep(m, viewer) && !m.live && <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />}
       <Videos urls={m.videos} />
       <Timeline m={m} byId={byId} />
       <div className="card lineup">

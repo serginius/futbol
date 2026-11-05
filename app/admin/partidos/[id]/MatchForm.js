@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
+import InjuryBadge from "@/components/Injury";
 import { createClient } from "@/lib/supabase/client";
 import { displayName } from "@/lib/format";
 
@@ -127,7 +128,7 @@ export default function MatchForm({ match, players }) {
         <div className="picker">
           {sorted.map((p) => (
             <div className="pick" key={p.id}>
-              <span className="who"><Avatar player={p} /><span>{displayName(p)}</span></span>
+              <span className="who"><Avatar player={p} /><span>{displayName(p)}</span><InjuryBadge player={p} short /></span>
               <span className="seg">
                 <button type="button" className={!side[p.id] ? "on" : ""} onClick={() => setSideOf(p.id, null)}>—</button>
                 <button type="button" className={side[p.id] === "A" ? "on" : ""} onClick={() => setSideOf(p.id, "A")}>{f.a || "1"}</button>
