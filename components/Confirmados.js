@@ -31,7 +31,7 @@ export default function Confirmados({ matchId, players, meId, loggedIn }) {
         <h2 className="sm">✋ Confirmados · {players.length}</h2>
         {meId ? (
           <button type="button" className={`btn ${inList ? "" : "accent"}`} disabled={busy} onClick={toggle}>
-            {inList ? "Me bajo 😢" : "Me anoto ✋"}
+            {inList ? "Me bajo 💅" : "Me anoto ✋"}
           </button>
         ) : !loggedIn ? (
           <Link className="btn small" href="/login">Entrá para anotarte</Link>
