@@ -58,7 +58,7 @@ export default async function Home() {
         </section>
       )}
       <section className="sec">
-        <div className="sec-head"><h2>{next?.live ? "Jugándose ahora" : "Próximo partido"}</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
+        <div className="sec-head"><h2>{next?.live ? "🔴 Jugándose ahora" : "⚽ Próximo partido"}</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
         {next ? <MatchCard m={next} byId={byId} hero /> : <div className="card muted">No hay partido programado.</div>}
         {next && !next.live && (
           <Confirmados matchId={next.id} players={next.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />

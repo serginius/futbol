@@ -12,7 +12,7 @@ export default async function Partidos() {
   const up = upcomingMatches(matches), pl = playedMatches(matches), pend = pendingResults(matches);
   return (
     <>
-      <div className="sec-head"><h2>Próximos</h2>{isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
+      <div className="sec-head"><h2>⚽ Próximos</h2>{isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
       {up.length ? up.map((m) => <MatchCard key={m.id} m={m} byId={byId} />) : <div className="card muted">No hay partidos programados.</div>}
       {isAdmin && pend.length > 0 && (<><h2>Falta cargar resultado</h2>{pend.map((m) => <MatchCard key={m.id} m={m} byId={byId} />)}</>)}
       <h2>Resultados</h2>
