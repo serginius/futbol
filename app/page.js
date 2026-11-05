@@ -4,6 +4,8 @@ import ScorersTable from "@/components/ScorersTable";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, playedMatches, upcomingMatches, computeStats, score } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
+import { canKeep } from "@/lib/keeper";
+import { copitasFor } from "@/lib/copitas";
 
 export const dynamic = "force-dynamic";
 
@@ -27,12 +29,12 @@ export default async function Home() {
       const g = [...lastMine.goalsA, ...lastMine.goalsB].filter((x) => x.player_id === id && !x.own_goal).length;
       txt = `${fmtDate(lastMine.date)}: ${my > their ? "ganaste" : my < their ? "perdiste" : "empataste"} ${my}–${their}${g ? ` y metiste ${g} gol${g > 1 ? "es" : ""}` : ""}${lastMine.mvp_id === id ? ". Fuiste la figura" : ""}.`;
     }
-    mine = { s, txt };
+    mine = { s, txt, copas: copitasFor(id, players, matches).filter((c) => c.won) };
   }
 
   return (
     <>
-      {viewer.user && !viewer.player && !viewer.isAdmin && (
+      {viewer.user && !viewer.player && !viewer.isAdmin && !canKeep(next, viewer) && (
         <div className="banner">Tu mail no está vinculado a ningún jugador. Pedile al organizador que te agregue.</div>
       )}
       {mine && (
@@ -46,12 +48,22 @@ export default async function Home() {
               <div className="stat"><b>{mine.s.pg}-{mine.s.pe}-{mine.s.pp}</b><span>G-E-P</span></div>
               <div className="stat"><b>{mine.s.mvp}</b><span>MVP</span></div>
             </div>
+            <Link href="/perfil" className="who" style={{ flexWrap: "wrap" }} aria-label="Ver mis copitas">
+              {mine.copas.length ? (
+                <><span className="mini-copitas">{mine.copas.map((c) => <span key={c.id} title={c.name}>{c.e}</span>)}</span><span className="muted" style={{ fontSize: 13 }}>Ver mis copitas →</span></>
+              ) : <span className="muted" style={{ fontSize: 13 }}>🏆 Todavía no ganaste copitas. Mirá cuáles hay →</span>}
+            </Link>
           </div>
         </section>
       )}
       <section className="sec">
-        <div className="sec-head"><h2>Próximo partido</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
+        <div className="sec-head"><h2>{next?.live ? "Jugándose ahora" : "Próximo partido"}</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
         {next ? <MatchCard m={next} byId={byId} hero /> : <div className="card muted">No hay partido programado.</div>}
+        {next && canKeep(next, viewer) && (
+          <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
+            🔴 {next.live ? "Seguir anotando EN VIVO" : "Abrir panel EN VIVO"}
+          </Link>
+        )}
       </section>
       <section className="sec">
         <h2>Último resultado</h2>
