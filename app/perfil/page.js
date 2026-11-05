@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import PlayerForm from "@/components/PlayerForm";
 import PlayerStats from "@/components/PlayerStats";
 import Copitas from "@/components/Copitas";
+import InjuryBadge from "@/components/Injury";
+import InjuryForm from "@/components/InjuryForm";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, computeStats, upcomingMatches } from "@/lib/data";
 import { initials } from "@/lib/format";
@@ -37,11 +39,13 @@ export default async function Perfil() {
               {player.photo_url ? <img className="big" src={player.photo_url} alt="" /> : <div className="big">{initials(player.name)}</div>}
               <div className="stack" style={{ gap: 6, minWidth: 0 }}>
                 <span className="pname">{player.nick || player.name}</span>
+                <InjuryBadge player={player} />
                 <span className="muted">{[player.nick ? player.name : "", player.position, player.number ? `#${player.number}` : "", player.foot ? `Pie ${player.foot}` : ""].filter(Boolean).join(" · ")}</span>
                 <div className="form" aria-label="Últimos 5 partidos">{s.form.slice(-5).map((r, i) => <i key={i} className={r}>{r}</i>)}</div>
               </div>
             </div>
             <PlayerStats s={s} />
+            <InjuryForm player={player} mine />
           </div>
           <Copitas id={player.id} players={players} matches={matches} mine />
           <details className="card edit">

@@ -186,3 +186,4 @@ details.edit summary{cursor:pointer;font-weight:600;list-style:none}
 details.edit summary::-webkit-details-marker{display:none}
 details.edit[open] summary{margin-bottom:12px}
 .aguanta{display:block;width:100%;max-width:420px;margin:0 auto;border-radius:var(--r);border:3px solid var(--accent)}
+.injured{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff;background:#d6336c;border-radius:99px;padding:3px 9px;width:fit-content}
