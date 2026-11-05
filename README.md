@@ -19,7 +19,7 @@ Todo corre gratis: **Supabase** (base de datos, login con Google y fotos) + **Ve
 3. Abrí el archivo [`supabase/schema.sql`](supabase/schema.sql) de este repo, copiá todo y pegalo.
 4. **Al final del archivo cambiá `tu-mail@gmail.com` por tu Gmail** (en minúsculas). Ese mail queda como admin.
 5. Tocá **Run**. Tiene que decir "Success".
-6. Hacé lo mismo con [`supabase/02-vivo-videos-copitas.sql`](supabase/02-vivo-videos-copitas.sql) (videos, panel EN VIVO, asistencias y faltas). Y después con [`supabase/03-lesiones.sql`](supabase/03-lesiones.sql) (lesionados).
+6. Hacé lo mismo con [`supabase/02-vivo-videos-copitas.sql`](supabase/02-vivo-videos-copitas.sql) (videos, panel EN VIVO, asistencias y faltas). Y después con [`supabase/03-lesiones.sql`](supabase/03-lesiones.sql) (lesionados). Y con [`supabase/04-confirmados.sql`](supabase/04-confirmados.sql) (Me anoto / Confirmados).
 7. Andá a **Project Settings → API** (o **Data API**) y anotá dos cosas: la **Project URL** y la **anon public key**.
 
 ### 2. Google: botón "Entrar con Google"
@@ -57,6 +57,7 @@ En Supabase → **Authentication → URL Configuration**:
 - **Otro admin:** Admin → Admins → agregar mail.
 - **Videos:** subí el partido a YouTube (como "No listado" si no querés que aparezca en búsquedas), abrí el partido → Editar y pegá el link en "Links de YouTube". Se ve adentro de la página del partido.
 - **Panel EN VIVO:** en el partido poné el Gmail del planillero (alguien que no juega). Ese mail también tiene que estar en Google Cloud → Público → Usuarios de prueba. El día del partido entra a la app, toca "Abrir panel EN VIVO", "Arrancar partido", y va anotando goles (con asistencia), faltas y tarjetas tocando las fotos. Al final, "Terminar partido" y elige la figura.
+- **Confirmados:** en el próximo partido cada jugador toca "Me anoto ✋" (o "Me bajo"). Al armar los equipos, los confirmados aparecen primero.
 - **Lesionados:** en Mi perfil, "Estoy lesionado" y elegís hasta qué día no venís. El admin lo puede marcar desde la carta de cualquier jugador. Se borra solo cuando pasa la fecha.
 - **Copitas:** se ganan solas con lo que se carga. Se ven en "Mi perfil" y en la carta de cada jugador.
 

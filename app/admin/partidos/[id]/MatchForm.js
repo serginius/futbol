@@ -28,7 +28,8 @@ export default function MatchForm({ match, players }) {
   const A = Object.keys(side).filter((k) => side[k] === "A");
   const B = Object.keys(side).filter((k) => side[k] === "B");
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
-  const sorted = [...players].sort((x, y) => displayName(x).localeCompare(displayName(y)));
+  const conf = new Set(match.signups || []);
+  const sorted = [...players].sort((x, y) => (conf.has(y.id) - conf.has(x.id)) || displayName(x).localeCompare(displayName(y)));
 
   function setSideOf(id, s) { const n = { ...side }; if (s) n[id] = s; else delete n[id]; setSide(n); }
   function addGoal(team) {
@@ -125,10 +126,11 @@ export default function MatchForm({ match, players }) {
       </div>
       <div className="card stack">
         <h2 className="sm">¿Quién juega y en qué equipo? · {A.length} vs {B.length}</h2>
+        {conf.size > 0 && <span className="muted" style={{ fontSize: 13 }}>Arriba de todo están los {conf.size} que se anotaron (✋ Confirmado).</span>}
         <div className="picker">
           {sorted.map((p) => (
             <div className="pick" key={p.id}>
-              <span className="who"><Avatar player={p} /><span>{displayName(p)}</span><InjuryBadge player={p} short /></span>
+              <span className="who"><Avatar player={p} /><span>{displayName(p)}</span>{conf.has(p.id) && <span className="pill next">✋ Confirmado</span>}<InjuryBadge player={p} short /></span>
               <span className="seg">
                 <button type="button" className={!side[p.id] ? "on" : ""} onClick={() => setSideOf(p.id, null)}>—</button>
                 <button type="button" className={side[p.id] === "A" ? "on" : ""} onClick={() => setSideOf(p.id, "A")}>{f.a || "1"}</button>

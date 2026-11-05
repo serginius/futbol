@@ -40,7 +40,7 @@ export default function MatchCard({ m, byId, hero = false, link = true }) {
       {showScore && (a > 0 || b > 0) && (
         <div className="scorers"><div>{scorersText(m.goalsA, byId)}</div><div>{scorersText(m.goalsB, byId)}</div></div>
       )}
-      {!played && !live && <div className="muted" style={{ fontSize: 13 }}>{m.teamA.length + m.teamB.length} confirmados</div>}
+      {!played && !live && <div className="muted" style={{ fontSize: 13 }}>{Math.max(m.signups?.length || 0, m.teamA.length + m.teamB.length)} confirmados</div>}
     </>
   );
   const cls = `card match ${hero ? "hero-next" : ""}`;
