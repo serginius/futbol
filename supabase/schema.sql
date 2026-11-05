@@ -29,8 +29,8 @@ create table if not exists public.matches (
   time text,
   place text,
   status text not null default 'programado' check (status in ('programado', 'jugado')),
-  team_a_name text not null default 'Blanco',
-  team_b_name text not null default 'Negro',
+  team_a_name text not null default 'Local',
+  team_b_name text not null default 'Visitante',
   mvp_id uuid references public.players(id) on delete set null,
   notes text,
   created_at timestamptz not null default now()
