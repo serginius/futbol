@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getLeague } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Goleadores · Fútbol Miércoles" };
+export const metadata = { title: "Goleadores · Fútbol LSC" };
 
 export default async function Goleadores() {
   const supabase = await createClient();
