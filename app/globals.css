@@ -21,14 +21,20 @@ img{max-width:100%}
 header.top{color:var(--navy);position:relative;overflow:hidden;padding-top:env(safe-area-inset-top,0px);border-bottom:4px solid var(--navy);
   background:repeating-linear-gradient(90deg,var(--celeste) 0 56px,#ffffff 56px 112px)}
 .flag-art{position:absolute;inset:0;pointer-events:none}
-.flag-art .sun{position:absolute;right:max(10px,calc(50% - 420px));top:50%;width:150px;height:150px;transform:translateY(-50%);fill:#f2b705;opacity:.55}
-.flag-art .ten{position:absolute;right:max(36px,calc(50% - 392px));top:50%;transform:translateY(-52%);font-family:var(--font-display);font-weight:800;font-size:96px;line-height:1;color:var(--navy);-webkit-text-stroke:3px #fff;paint-order:stroke fill;letter-spacing:-.02em}
-header.top .wrap{padding-block:18px 14px;display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.flag-art .sun{position:absolute;right:max(0px,calc(50% - 440px));top:50%;width:150px;height:150px;transform:translateY(-50%)}
+.flag-art .rays{fill:#f2b705}
+.flag-art .face{fill:#f6c22d;stroke:#c98a00;stroke-width:1.2}
+.flag-art .smoke{stroke:#ffffff;stroke-width:3;opacity:.95;filter:drop-shadow(0 0 1px #5d6b78)}
+.flag-art .ten{position:absolute;right:max(150px,calc(50% - 290px));top:50%;transform:translateY(-52%);font-family:var(--font-display);font-weight:800;font-size:96px;line-height:1;color:var(--navy);-webkit-text-stroke:3px #fff;paint-order:stroke fill;letter-spacing:-.02em}
+.flag-art .leaf{position:absolute;right:max(180px,calc(50% - 262px));top:50%;width:120px;height:84px;transform:translateY(-46%) rotate(-12deg);fill:#2e8b3a;opacity:.85}
+.flag-art .leaf .stem{stroke:#2e8b3a;stroke-width:3}
+@media (prefers-reduced-motion:no-preference){.flag-art .smoke path{animation:humo 3.5s ease-in-out infinite}@keyframes humo{0%,100%{transform:translateY(0);opacity:.85}50%{transform:translateY(-3px);opacity:.45}}}
+header.top .wrap{padding-block:26px 22px;display:flex;align-items:center;gap:14px;position:relative;z-index:1}
 .crest{width:52px;height:60px;flex:none;filter:drop-shadow(0 2px 3px rgba(11,42,74,.35))}
 .brand{text-decoration:none;background:rgba(255,255,255,.88);padding:6px 12px;border-radius:10px}
 .brand h1{font-family:var(--font-display);font-weight:800;font-size:30px;letter-spacing:.04em;text-transform:uppercase;margin:0;line-height:1;color:var(--navy)}
 .brand p{margin:2px 0 0;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--pitch)}
-.me{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative;z-index:1;margin-right:120px}
+.me{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative;z-index:1;margin-right:260px}
 .me a,.me button{font:inherit;font-size:13px;font-weight:600;color:#fff;background:var(--navy);border:0;padding:6px 11px;border-radius:99px;text-decoration:none;cursor:pointer;white-space:nowrap}
 nav.tabs{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
 nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
@@ -125,4 +131,4 @@ input,select,textarea{font:inherit;color:var(--fg);background:var(--surface-2);b
 .list>div{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .login-card{max-width:440px;margin:30px auto;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center;padding:26px 22px}
 .login-card h2{color:var(--pitch);font-size:28px}
-@media (max-width:520px){.flag-art .sun{width:110px;height:110px;right:-10px}.flag-art .ten{font-size:64px;right:14px}.me{margin-right:70px}.brand h1{font-size:24px}.cols2,.lineup{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.nums{font-size:34px}.team{font-size:19px}.brand p{font-size:11px}}
+@media (max-width:520px){.flag-art .sun{width:104px;height:104px;right:-8px}.flag-art .ten{font-size:54px;right:88px}.flag-art .leaf{width:80px;height:56px;right:96px}.flag-art .sun{top:auto;bottom:-16px;transform:none}.flag-art .leaf{display:none}.flag-art .ten{right:78px}.me{position:absolute;top:calc(6px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));margin:0}.brand h1{font-size:24px}.cols2,.lineup{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.nums{font-size:34px}.team{font-size:19px}.brand p{font-size:11px}}

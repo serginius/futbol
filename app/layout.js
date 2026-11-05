@@ -2,6 +2,7 @@ import "./globals.css";
 import Link from "next/link";
 import { Barlow, Barlow_Condensed } from "next/font/google";
 import Crest from "@/components/Crest";
+import FlagArt from "@/components/FlagArt";
 import Tabs from "@/components/Tabs";
 import Avatar from "@/components/Avatar";
 import { createClient, getViewer } from "@/lib/supabase/server";
@@ -22,15 +23,7 @@ export default async function RootLayout({ children }) {
     <html lang="es" className={`${barlow.variable} ${barlowC.variable}`}>
       <body>
         <header className="top">
-          <div className="flag-art" aria-hidden="true">
-            <svg className="sun" viewBox="-50 -50 100 100">
-              {Array.from({ length: 32 }, (_, i) => (
-                <path key={i} d={i % 2 ? "M-2 -26 Q0 -40 2 -26 Z" : "M-2.5 -26 L0 -46 L2.5 -26 Z"} transform={`rotate(${i * 11.25})`} />
-              ))}
-              <circle r="24" />
-            </svg>
-            <span className="ten">10</span>
-          </div>
+          <FlagArt />
           <div className="wrap">
             <Crest />
             <Link href="/" className="brand"><h1>Fútbol LSC</h1><p>Copa La Cabral</p></Link>
