@@ -1,5 +1,4 @@
 import Link from "next/link";
-import LiveLink from "@/components/LiveLink";
 import { redirect } from "next/navigation";
 import PlayerForm from "@/components/PlayerForm";
 import PlayerStats from "@/components/PlayerStats";
@@ -9,7 +8,6 @@ import InjuryForm from "@/components/InjuryForm";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, computeStats, upcomingMatches } from "@/lib/data";
 import { initials } from "@/lib/format";
-import { canKeep } from "@/lib/keeper";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mi perfil · Fútbol LSC" };
@@ -20,7 +18,6 @@ export default async function Perfil() {
   const { user, player, isAdmin } = viewer;
   if (!user) redirect("/login");
   const { players, matches } = await getLeague(supabase);
-  const keep = upcomingMatches(matches).find((m) => canKeep(m, viewer) && (!isAdmin || m.keeper_email));
   const s = player ? computeStats(players, matches)[player.id] : null;
   return (
     <>
@@ -28,11 +25,6 @@ export default async function Perfil() {
         <h2>Mi perfil</h2>
         <form action="/auth/signout" method="post"><button className="btn small">Salir</button></form>
       </div>
-      {keep && (
-        <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${keep.id}/vivo`}>
-          📻 Modo relator: ON · Sos el relator del próximo partido
-        </LiveLink>
-      )}
       {player ? (
         <>
           <div className="card stack">
@@ -58,7 +50,7 @@ export default async function Perfil() {
       ) : (
         <div className="card muted">
           <p style={{ marginTop: 0 }}>Entraste como {user.email}.</p>
-          {isAdmin ? "Sos admin pero no tenés ficha de jugador. Creala en Admin con tu mismo Gmail." : keep ? "Estás habilitado como planillero." : "Tu mail no está vinculado a ningún jugador. Pedile al organizador que te agregue."}
+          {isAdmin ? "Sos admin pero no tenés ficha de jugador. Creala en Admin con tu mismo Gmail." : "Tu mail no está vinculado a ningún jugador. Pedile al organizador que te agregue."}
         </div>
       )}
     </>

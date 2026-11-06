@@ -1,12 +1,10 @@
 import Link from "next/link";
-import LiveLink from "@/components/LiveLink";
 import MatchCard from "@/components/MatchCard";
 import Confirmados from "@/components/Confirmados";
 import ScorersTable from "@/components/ScorersTable";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, playedMatches, upcomingMatches, computeStats, score } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
-import { canKeep } from "@/lib/keeper";
 import { copitasFor } from "@/lib/copitas";
 
 export const dynamic = "force-dynamic";
@@ -36,7 +34,7 @@ export default async function Home() {
 
   return (
     <>
-      {viewer.user && !viewer.player && !viewer.isAdmin && !canKeep(next, viewer) && (
+      {viewer.user && !viewer.player && !viewer.isAdmin && (
         <div className="banner">Tu mail no está vinculado a ningún jugador. Pedile al organizador que te agregue.</div>
       )}
       {mine && (
@@ -63,11 +61,6 @@ export default async function Home() {
         {next ? <MatchCard m={next} byId={byId} hero /> : <div className="card muted">No hay partido programado.</div>}
         {next && !next.live && (
           <Confirmados matchId={next.id} players={next.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
-        )}
-        {next && canKeep(next, viewer) && (
-          <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
-            {next.live ? "🎙️ Seguí relatando" : "🎙️ Relatá el partido"}
-          </LiveLink>
         )}
       </section>
       <section className="sec">

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import LiveLink from "@/components/LiveLink";
 import { notFound } from "next/navigation";
 import MatchCard from "@/components/MatchCard";
 import Avatar from "@/components/Avatar";
@@ -10,7 +9,6 @@ import AutoRefresh from "@/components/AutoRefresh";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague } from "@/lib/data";
 import { displayName } from "@/lib/format";
-import { canKeep } from "@/lib/keeper";
 
 export const dynamic = "force-dynamic";
 
@@ -29,11 +27,6 @@ export default async function Partido({ params }) {
       {m.live && <AutoRefresh seconds={15} />}
       <Link href="/partidos" className="muted">← Partidos</Link>
       <MatchCard m={m} byId={byId} link={false} />
-      {canKeep(m, viewer) && (
-        <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${m.id}/vivo`}>
-          {m.live ? "🎙️ Seguí relatando" : "🔴 Arranca la transmisión"}
-        </LiveLink>
-      )}
       {m.status !== "jugado" && !m.live && (
         <Confirmados matchId={m.id} players={m.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
       )}
