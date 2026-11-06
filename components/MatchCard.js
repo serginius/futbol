@@ -2,6 +2,7 @@ import Link from "next/link";
 import { fmtDate, daysUntil, displayName } from "@/lib/format";
 import { score } from "@/lib/data";
 import Countdown from "./Countdown";
+import NightPitch from "./NightPitch";
 
 function scorersText(goals, byId) {
   const c = new Map();
@@ -10,6 +11,32 @@ function scorersText(goals, byId) {
     const [id, og] = k.split("|");
     return displayName(byId[id]) + (n > 1 ? ` ×${n}` : "") + (og ? " (e/c)" : "");
   }).join(", ");
+}
+
+function HeroInner({ m, byId, live, a, b }) {
+  const n = Math.max(m.signups?.length || 0, m.teamA.length + m.teamB.length);
+  return (
+    <>
+      <div className="hero-lights" aria-hidden="true"><i /><i /><i /><i /></div>
+      <div className="hero-top">
+        {live ? <span className="pill live">En vivo</span> : <span className="pill next">Próximo partido</span>}
+        <span className="hero-when">{fmtDate(m.date)}{m.time ? ` · ${m.time}` : ""}{m.place ? ` · ${m.place}` : ""}</span>
+      </div>
+      <div className="hero-teams">
+        <span className="ht">{m.team_a_name}</span>
+        {live ? <span className="hs">{a}<i>–</i>{b}</span> : <span className="hv">VS</span>}
+        <span className="ht">{m.team_b_name}</span>
+      </div>
+      {live && (a > 0 || b > 0) && (
+        <div className="scorers"><div>{scorersText(m.goalsA, byId)}</div><div>{scorersText(m.goalsB, byId)}</div></div>
+      )}
+      <div className="hero-field">
+        <NightPitch />
+        {!live && <Countdown date={m.date} time={m.time} />}
+      </div>
+      <div className="hero-foot">✋ {n} confirmado{n === 1 ? "" : "s"}</div>
+    </>
+  );
 }
 
 export default function MatchCard({ m, byId, hero = false, link = true }) {
@@ -33,7 +60,7 @@ export default function MatchCard({ m, byId, hero = false, link = true }) {
         {showScore ? (
           <div className="nums"><span>{a}</span><span className="sep">–</span><span>{b}</span></div>
         ) : (
-          hero ? <div className="nums vs ball" aria-label="vs">⚽</div> : <div className="nums vs">vs</div>
+          <div className="nums vs">vs</div>
         )}
         <div className="team b">{m.team_b_name}</div>
       </div>
@@ -45,5 +72,9 @@ export default function MatchCard({ m, byId, hero = false, link = true }) {
     </>
   );
   const cls = `card match ${hero ? "hero-next" : ""}`;
+  if (hero && !played) {
+    const h = <HeroInner m={m} byId={byId} live={live} a={a} b={b} />;
+    return link ? <Link href={`/partidos/${m.id}`} className={cls}>{h}</Link> : <div className={cls}>{h}</div>;
+  }
   return link ? <Link href={`/partidos/${m.id}`} className={cls}>{inner}</Link> : <div className={cls}>{inner}</div>;
 }
