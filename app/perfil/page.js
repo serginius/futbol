@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LiveLink from "@/components/LiveLink";
 import { redirect } from "next/navigation";
 import PlayerForm from "@/components/PlayerForm";
 import PlayerStats from "@/components/PlayerStats";
@@ -28,9 +29,9 @@ export default async function Perfil() {
         <form action="/auth/signout" method="post"><button className="btn small">Salir</button></form>
       </div>
       {keep && (
-        <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${keep.id}/vivo`}>
-          🔴 Sos el planillero del próximo partido: abrir panel EN VIVO
-        </Link>
+        <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${keep.id}/vivo`}>
+          📻 Modo relator: ON · Sos el relator del próximo partido
+        </LiveLink>
       )}
       {player ? (
         <>

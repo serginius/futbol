@@ -55,7 +55,7 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
   }
 
   async function start() {
-    await run(() => supabase.rpc("live_start", { mid: m.id }), "¡Arrancó el partido!");
+    await run(() => supabase.rpc("live_start", { mid: m.id }), "🎙️ ¡Arrancó la transmisión!");
   }
 
   async function saveGoal(player, assist) {
@@ -167,12 +167,11 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
         <div className="team">{m.team_a_name}</div>
         <div className="nums"><span>{a}</span><span className="sep">–</span><span>{b}</span></div>
         <div className="team">{m.team_b_name}</div>
-        <div className="clock">{minute ? `🔴 EN VIVO · ${minute}'` : "Sin arrancar"}</div>
+        <div className="clock">{minute ? `🔴 EN VIVO · ${minute}'` : "📻 Modo relator: ON"}</div>
       </div>
       {!m.started_at ? (
         <>
-        <img className="aguanta" src="/aguanta.png" alt="AGUANTAAAAA" />
-        <button type="button" className="btn accent" style={{ justifyContent: "center", fontSize: 20, padding: 16 }} disabled={busy} onClick={start}>▶ Arrancar partido</button>
+        <button type="button" className="btn accent" style={{ justifyContent: "center", fontSize: 20, padding: 16 }} disabled={busy} onClick={start}>🎤 Agarrá el micrófono, que esto es fútbol</button>
         </>
       ) : (
         <>

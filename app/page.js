@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LiveLink from "@/components/LiveLink";
 import MatchCard from "@/components/MatchCard";
 import Confirmados from "@/components/Confirmados";
 import ScorersTable from "@/components/ScorersTable";
@@ -58,15 +59,15 @@ export default async function Home() {
         </section>
       )}
       <section className="sec">
-        <div className="sec-head"><h2>{next?.live ? "Jugándose ahora" : "Próximo partido"}</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
+        <div className="sec-head"><h2>{next?.live ? "🔴 Jugándose ahora" : "⚽ Próximo partido"}</h2>{viewer.isAdmin && <Link className="btn small accent" href="/admin/partidos/nuevo">+ Partido</Link>}</div>
         {next ? <MatchCard m={next} byId={byId} hero /> : <div className="card muted">No hay partido programado.</div>}
         {next && !next.live && (
           <Confirmados matchId={next.id} players={next.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
         )}
         {next && canKeep(next, viewer) && (
-          <Link className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
-            🔴 {next.live ? "Seguir anotando EN VIVO" : "Abrir panel EN VIVO"}
-          </Link>
+          <LiveLink className="btn accent" style={{ justifyContent: "center", fontSize: 17, padding: "12px 16px" }} href={`/partidos/${next.id}/vivo`}>
+            {next.live ? "🎙️ Seguí relatando" : "🎙️ Relatá el partido"}
+          </LiveLink>
         )}
       </section>
       <section className="sec">
