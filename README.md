@@ -19,7 +19,7 @@ Todo corre gratis: **Supabase** (base de datos, login con Google y fotos) + **Ve
 3. Abrí el archivo [`supabase/schema.sql`](supabase/schema.sql) de este repo, copiá todo y pegalo.
 4. **Al final del archivo cambiá `tu-mail@gmail.com` por tu Gmail** (en minúsculas). Ese mail queda como admin.
 5. Tocá **Run**. Tiene que decir "Success".
-6. Hacé lo mismo con [`supabase/02-vivo-videos-copitas.sql`](supabase/02-vivo-videos-copitas.sql) (videos, panel EN VIVO, asistencias y faltas). Y después con [`supabase/03-lesiones.sql`](supabase/03-lesiones.sql) (lesionados). Y con [`supabase/04-confirmados.sql`](supabase/04-confirmados.sql) (Me anoto / Confirmados).
+6. Hacé lo mismo con [`supabase/02-vivo-videos-copitas.sql`](supabase/02-vivo-videos-copitas.sql) (videos, panel EN VIVO, asistencias y faltas). Y después con [`supabase/03-lesiones.sql`](supabase/03-lesiones.sql) (lesionados). Y con [`supabase/04-confirmados.sql`](supabase/04-confirmados.sql) (Me anoto / Confirmados), [`supabase/05-link-relator.sql`](supabase/05-link-relator.sql) (link de relator) y [`supabase/06-penal.sql`](supabase/06-penal.sql) (penales).
 7. Andá a **Project Settings → API** (o **Data API**) y anotá dos cosas: la **Project URL** y la **anon public key**.
 
 ### 2. Google: botón "Entrar con Google"

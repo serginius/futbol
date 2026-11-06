@@ -25,6 +25,7 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   const [ownGoal, setOwnGoal] = useState(false);
   const [scorer, setScorer] = useState(null); // { player, team } esperando asistencia
   const [fouler, setFouler] = useState(null); // jugador que hizo la falta, esperando si hubo tarjeta
+  const [penal, setPenal] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
@@ -88,16 +89,17 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
       return;
     }
     setFouler(player);
+    setPenal(false);
   }
 
   // Falta: sin tarjeta, amarilla o roja (una tarjeta cuenta también como falta).
   async function saveFoul(player, kind) {
     const label = { falta: "🟦 Falta de", amarilla: "🟨 Amarilla a", roja: "🟥 Roja a" }[kind];
-    const ev = { team: teamOf(player), player_id: player.id, kind, minute };
+    const ev = { team: teamOf(player), player_id: player.id, kind, minute, penalty: penal };
     const ok = await run(() => practice
       ? setLocal((x) => ({ ...x, events: [...x.events, { ...ev, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
-      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute }), `${label} ${displayName(player)}`);
-    if (ok) setFouler(null);
+      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute, pen: penal }), `${label} ${displayName(player)}${penal ? " · ⚽ ¡PENAL!" : ""}`);
+    if (ok) { setFouler(null); setPenal(false); }
   }
 
   async function undo(x) {
@@ -158,6 +160,9 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
           <h2>🟦 Falta de {displayName(fouler)}. ¿Hubo tarjeta?</h2>
           <button type="button" className="btn small" onClick={() => setFouler(null)}>Cancelar</button>
         </div>
+        <button type="button" className={`penal-toggle ${penal ? "on" : ""}`} aria-pressed={penal} onClick={() => setPenal(!penal)}>
+          ⚽ {penal ? "¡Fue penal! (tocá para sacar)" : "¿Fue penal? Tocá acá"}
+        </button>
         <div className="cards-pick">
           <button type="button" disabled={busy} onClick={() => saveFoul(fouler, "falta")}><b>🙅</b>Sin tarjeta</button>
           <button type="button" className="am" disabled={busy} onClick={() => saveFoul(fouler, "amarilla")}><b>🟨</b>Amarilla</button>
