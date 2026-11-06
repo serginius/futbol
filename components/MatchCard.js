@@ -34,7 +34,7 @@ function HeroInner({ m, byId, live, a, b }) {
         <NightPitch />
         {!live && <Countdown date={m.date} time={m.time} />}
       </div>
-      <div className="hero-foot">✋ {n} confirmado{n === 1 ? "" : "s"}</div>
+      <div className="hero-foot">{n} confirmado{n === 1 ? "" : "s"}</div>
     </>
   );
 }
