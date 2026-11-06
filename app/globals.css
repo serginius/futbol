@@ -242,3 +242,11 @@ details.edit[open] summary{margin-bottom:12px}
 .hero-field .countdown .cd i{color:#aaa}
 .hero-foot{background:#0b0c0e;color:#e9e9e9}
 .hero-next .scorers{color:#e9e9e9}
+
+/* Relato en vivo (Admin) y link de relator */
+.relato-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.relato-url{width:100%;font-size:13px;font-family:ui-monospace,monospace;background:var(--surface-2)}
+.btn.wa{background:#1f8f4e;border-color:#1f8f4e;color:#fff}
+.pill.live{background:#c8102e;border-color:#c8102e;color:#fff}
+.practice-note,.relator-hi{border:1px dashed var(--line);background:var(--surface-2);border-radius:var(--r);padding:10px 12px;font-size:14px}
+.relator-hi{border-style:solid;margin-bottom:10px}

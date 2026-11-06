@@ -49,7 +49,7 @@ export default function MatchForm({ match, players }) {
         team_a_name: f.a.trim() || "Equipo 1", team_b_name: f.b.trim() || "Equipo 2",
         mvp_id: played && mvp ? mvp : null, notes: played ? f.notes.trim() || null : null,
         video_urls: f.videos.split(/\s+/).map((u) => u.trim()).filter((u) => /^https?:\/\//.test(u)),
-        keeper_email: f.keeper.trim().toLowerCase() || null };
+        keeper_email: null };
       let id = match.id;
       if (id) {
         const { error } = await supabase.from("matches").update(row).eq("id", id); if (error) throw error;
@@ -120,9 +120,6 @@ export default function MatchForm({ match, players }) {
           <label className="f">Equipo 1<input value={f.a} onChange={set("a")} /></label>
           <label className="f">Equipo 2<input value={f.b} onChange={set("b")} /></label>
         </div>
-        <label className="f">Planillero del panel EN VIVO (Gmail de quien anota, no hace falta que juegue)
-          <input type="email" value={f.keeper} onChange={set("keeper")} placeholder="Ej: amigo@gmail.com" />
-        </label>
       </div>
       <div className="card stack">
         <h2 className="sm">¿Quién juega y en qué equipo? · {A.length} vs {B.length}</h2>

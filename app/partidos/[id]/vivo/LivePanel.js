@@ -19,7 +19,9 @@ function minuteNow(startedAt) {
   return Math.max(1, Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000) + 1);
 }
 
-export default function LivePanel({ match: m, teamA, teamB, byId }) {
+// tok: el código del link de relator (o null si es el admin).
+// practice: modo práctica, no guarda nada y nadie lo ve.
+export default function LivePanel({ match: real, teamA, teamB, byId, tok = null, practice = false, back }) {
   const router = useRouter();
   const [action, setAction] = useState("gol");
   const [ownGoal, setOwnGoal] = useState(false);
@@ -28,16 +30,22 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [, tick] = useState(0);
+  const [local, setLocal] = useState({ started_at: null, goals: [], events: [] });
 
   // Reloj y datos al día (por si anota otro desde otro celu).
   useEffect(() => {
     const t = setInterval(() => tick((x) => x + 1), 15000);
-    const r = setInterval(() => { if (!document.hidden) router.refresh(); }, 20000);
+    const r = setInterval(() => { if (!document.hidden && !practice) router.refresh(); }, 20000);
     return () => { clearInterval(t); clearInterval(r); };
-  }, [router]);
+  }, [router, practice]);
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(""), 2500); return () => clearTimeout(t); }, [toast]);
 
   const supabase = createClient();
+  const m = practice ? {
+    ...real, started_at: local.started_at, events: local.events,
+    goalsA: local.goals.filter((g) => g.team === "A"), goalsB: local.goals.filter((g) => g.team === "B"),
+  } : real;
+  const backHref = back || `/partidos/${m.id}`;
   const minute = minuteNow(m.started_at);
   const a = m.goalsA.length, b = m.goalsB.length;
   const log = matchLog(m).reverse();
@@ -45,6 +53,7 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
   const tname = (t) => (t === "A" ? m.team_a_name : m.team_b_name);
 
   async function run(fn, ok) {
+    if (practice) { fn(); if (ok) setToast(ok); return true; }
     setBusy(true);
     const { error } = await fn();
     setBusy(false);
@@ -55,15 +64,18 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
   }
 
   async function start() {
-    await run(() => supabase.rpc("live_start", { mid: m.id }), "🎙️ ¡Arrancó la transmisión!");
+    await run(() => practice
+      ? setLocal((x) => ({ ...x, started_at: new Date().toISOString() }))
+      : supabase.rpc("relator_start", { mid: m.id, tok }), "🎙️ ¡Arrancó la transmisión!");
   }
 
   async function saveGoal(player, assist) {
     const team = teamOf(player);
     const scoringTeam = ownGoal ? (team === "A" ? "B" : "A") : team;
-    const ok = await run(() => supabase.from("goals").insert({
-      match_id: m.id, team: scoringTeam, player_id: player.id, own_goal: ownGoal, assist_id: assist?.id || null, minute,
-    }), `⚽ Gol de ${displayName(player)}${ownGoal ? " (en contra)" : ""}`);
+    const g = { team: scoringTeam, player_id: player.id, own_goal: ownGoal, assist_id: assist?.id || null, minute };
+    const ok = await run(() => practice
+      ? setLocal((x) => ({ ...x, goals: [...x.goals, { ...g, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
+      : supabase.rpc("relator_goal", { mid: m.id, tok, t: g.team, pid: g.player_id, own: g.own_goal, ast: g.assist_id, mins: minute }), `⚽ Gol de ${displayName(player)}${ownGoal ? " (en contra)" : ""}`);
     if (ok) { setScorer(null); setOwnGoal(false); }
   }
 
@@ -77,16 +89,26 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
       return;
     }
     const label = { falta: "🟦 Falta de", amarilla: "🟨 Amarilla a", roja: "🟥 Roja a" }[action];
-    run(() => supabase.from("events").insert({ match_id: m.id, team: teamOf(player), player_id: player.id, kind: action, minute }), `${label} ${displayName(player)}`);
+    const ev = { team: teamOf(player), player_id: player.id, kind: action, minute };
+    run(() => practice
+      ? setLocal((x) => ({ ...x, events: [...x.events, { ...ev, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
+      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute }), `${label} ${displayName(player)}`);
   }
 
   async function undo(x) {
     if (!confirm(`¿Borrar "${logText(x, byId)}"?`)) return;
-    await run(() => supabase.from(x.type === "gol" ? "goals" : "events").delete().eq("id", x.id), "Borrado");
+    const key = x.type === "gol" ? "goals" : "events";
+    await run(() => practice
+      ? setLocal((l) => ({ ...l, [key]: l[key].filter((y) => y.id !== x.id) }))
+      : supabase.rpc("relator_undo", { mid: m.id, tok, is_goal: x.type === "gol", rid: x.id }), "Borrado");
   }
 
   async function finish(mvp) {
-    const ok = await run(() => supabase.rpc("live_finish", { mid: m.id, mvp: mvp?.id || null }));
+    if (practice) {
+      setLocal({ started_at: null, goals: [], events: [] }); setFinishing(false);
+      setToast("🧪 Fin de la práctica. No se guardó nada."); return;
+    }
+    const ok = await run(() => supabase.rpc("relator_finish", { mid: m.id, tok, mvp: mvp?.id || null }));
     if (ok) router.push(`/partidos/${m.id}`);
   }
 
@@ -103,7 +125,7 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
   if (!teamA.length && !teamB.length) {
     return (
       <div className="live-panel">
-        <Link href={`/partidos/${m.id}`} className="muted">← Partido</Link>
+        <Link href={backHref} className="muted">← Volver</Link>
         <div className="card">Todavía no están armados los equipos. El admin tiene que cargar quién juega en cada equipo (Admin → partido → "¿Quién juega?").</div>
       </div>
     );
@@ -162,7 +184,8 @@ export default function LivePanel({ match: m, teamA, teamB, byId }) {
 
   return (
     <div className="live-panel">
-      <Link href={`/partidos/${m.id}`} className="muted">← Ver el partido</Link>
+      <Link href={backHref} className="muted">← Volver</Link>
+      {practice && <div className="practice-note">🧪 <b>Modo práctica.</b> Tocá lo que quieras: no se guarda nada y nadie lo ve.</div>}
       <div className="live-board">
         <div className="team">{m.team_a_name}</div>
         <div className="nums"><span>{a}</span><span className="sep">–</span><span>{b}</span></div>

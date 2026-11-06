@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import AdminPlayers from "./AdminPlayers";
 import AdminAdmins from "./AdminAdmins";
+import AdminRelato from "./AdminRelato";
 import { createClient, getViewer } from "@/lib/supabase/server";
 import { getLeague, upcomingMatches, pendingResults } from "@/lib/data";
 import { fmtDate } from "@/lib/format";
@@ -14,10 +15,11 @@ export default async function Admin({ searchParams }) {
   const { isAdmin } = await getViewer(supabase);
   if (!isAdmin) redirect("/");
   const { editar } = await searchParams;
-  const [{ data: players }, { data: admins }, { matches }] = await Promise.all([
+  const [{ data: players }, { data: admins }, { matches }, { data: links }] = await Promise.all([
     supabase.from("players").select("*").order("name"),
     supabase.from("admins").select("email").order("email"),
     getLeague(supabase),
+    supabase.from("keeper_links").select("match_id,token"),
   ]);
   const todo = [...pendingResults(matches), ...upcomingMatches(matches)];
   return (
@@ -33,6 +35,7 @@ export default async function Admin({ searchParams }) {
           )) : <span className="muted">No hay partidos pendientes. Para editar uno jugado, abrilo desde Partidos.</span>}
         </div>
       </section>
+      <AdminRelato matches={upcomingMatches(matches).slice(0, 3)} links={Object.fromEntries((links || []).map((l) => [l.match_id, l.token]))} />
       <AdminPlayers players={players || []} editId={editar || null} />
       <AdminAdmins admins={(admins || []).map((a) => a.email)} />
     </>
