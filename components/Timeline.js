@@ -15,7 +15,7 @@ export function logText(x, byId) {
   if (x.type === "gol") {
     return `⚽ ${displayName(byId[x.player_id])}${x.own_goal ? " (en contra)" : ""}${x.assist_id ? ` · asist. ${displayName(byId[x.assist_id])}` : ""}`;
   }
-  return `${ICON[x.type]} ${LABEL[x.type] === "falta" ? "Falta de" : LABEL[x.type] === "amarilla" ? "Amarilla a" : "Roja a"} ${displayName(byId[x.player_id])}`;
+  return `${ICON[x.type]} ${LABEL[x.type] === "falta" ? "Falta de" : LABEL[x.type] === "amarilla" ? "Amarilla a" : "Roja a"} ${displayName(byId[x.player_id])}${x.penalty ? " · ⚽ penal" : ""}`;
 }
 
 export default function Timeline({ m, byId }) {

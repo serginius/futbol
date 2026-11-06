@@ -10,8 +10,6 @@ import { matchLog, logText } from "@/components/Timeline";
 const ACTIONS = [
   ["gol", "⚽", "Gol"],
   ["falta", "🟦", "Falta"],
-  ["amarilla", "🟨", "Amarilla"],
-  ["roja", "🟥", "Roja"],
 ];
 
 function minuteNow(startedAt) {
@@ -26,6 +24,8 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   const [action, setAction] = useState("gol");
   const [ownGoal, setOwnGoal] = useState(false);
   const [scorer, setScorer] = useState(null); // { player, team } esperando asistencia
+  const [fouler, setFouler] = useState(null); // jugador que hizo la falta, esperando si hubo tarjeta
+  const [penal, setPenal] = useState(false);
   const [finishing, setFinishing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
@@ -88,11 +88,18 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
       setScorer(player);
       return;
     }
-    const label = { falta: "🟦 Falta de", amarilla: "🟨 Amarilla a", roja: "🟥 Roja a" }[action];
-    const ev = { team: teamOf(player), player_id: player.id, kind: action, minute };
-    run(() => practice
+    setFouler(player);
+    setPenal(false);
+  }
+
+  // Falta: sin tarjeta, amarilla o roja (una tarjeta cuenta también como falta).
+  async function saveFoul(player, kind) {
+    const label = { falta: "🟦 Falta de", amarilla: "🟨 Amarilla a", roja: "🟥 Roja a" }[kind];
+    const ev = { team: teamOf(player), player_id: player.id, kind, minute, penalty: penal };
+    const ok = await run(() => practice
       ? setLocal((x) => ({ ...x, events: [...x.events, { ...ev, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
-      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute }), `${label} ${displayName(player)}`);
+      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute, pen: penal }), `${label} ${displayName(player)}${penal ? " · ⚽ ¡PENAL!" : ""}`);
+    if (ok) { setFouler(null); setPenal(false); }
   }
 
   async function undo(x) {
@@ -146,6 +153,23 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
         </div>
       </div>
     );
+  } else if (fouler) {
+    body = (
+      <div className="card stack">
+        <div className="faces-head">
+          <h2>🟦 Falta de {displayName(fouler)}. ¿Hubo tarjeta?</h2>
+          <button type="button" className="btn small" onClick={() => setFouler(null)}>Cancelar</button>
+        </div>
+        <button type="button" className={`penal-toggle ${penal ? "on" : ""}`} aria-pressed={penal} onClick={() => setPenal(!penal)}>
+          ⚽ {penal ? "¡Fue penal! (tocá para sacar)" : "¿Fue penal? Tocá acá"}
+        </button>
+        <div className="cards-pick">
+          <button type="button" disabled={busy} onClick={() => saveFoul(fouler, "falta")}><b>🙅</b>Sin tarjeta</button>
+          <button type="button" className="am" disabled={busy} onClick={() => saveFoul(fouler, "amarilla")}><b>🟨</b>Amarilla</button>
+          <button type="button" className="ro" disabled={busy} onClick={() => saveFoul(fouler, "roja")}><b>🟥</b>Roja</button>
+        </div>
+      </div>
+    );
   } else if (scorer) {
     const mates = (teamOf(scorer) === "A" ? teamA : teamB).filter((x) => x.id !== scorer.id);
     body = (
@@ -165,7 +189,7 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
       </div>
     );
   } else {
-    const title = action === "gol" ? (ownGoal ? "¿Quién la metió en contra?" : "¿Quién hizo el gol?") : `¿A quién le cobraron ${action === "falta" ? "la falta" : "la " + action}?`;
+    const title = action === "gol" ? (ownGoal ? "¿Quién la metió en contra?" : "¿Quién hizo el gol?") : "¿Falta a quién?";
     body = (
       <div className="card stack">
         <div className="faces-head">
@@ -198,7 +222,7 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
         </>
       ) : (
         <>
-          {!finishing && !scorer && (
+          {!finishing && !scorer && !fouler && (
             <div className="actions-big">
               {ACTIONS.map(([k, e, l]) => (
                 <button key={k} type="button" className={action === k ? "on" : ""} onClick={() => { setAction(k); setOwnGoal(false); }}><b>{e}</b>{l}</button>
