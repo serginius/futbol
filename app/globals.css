@@ -250,3 +250,10 @@ details.edit[open] summary{margin-bottom:12px}
 .pill.live{background:#c8102e;border-color:#c8102e;color:#fff}
 .practice-note,.relator-hi{border:1px dashed var(--line);background:var(--surface-2);border-radius:var(--r);padding:10px 12px;font-size:14px}
 .relator-hi{border-style:solid;margin-bottom:10px}
+/* Falta: ¿hubo tarjeta? */
+.actions-big{grid-template-columns:repeat(2,1fr)}
+.cards-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cards-pick button{font:inherit;font-family:var(--font-display);font-weight:800;font-size:18px;text-transform:uppercase;border:2px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;padding:16px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px}
+.cards-pick button b{font-size:34px;line-height:1}
+.cards-pick button.am{border-color:#e0a800;background:#fff6d6;color:#5a4300}
+.cards-pick button.ro{border-color:#c8102e;background:#fde4e7;color:#7a0a1c}
