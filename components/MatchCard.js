@@ -53,6 +53,7 @@ export default function MatchCard({ m, byId, hero = false, link = true }) {
         {live ? <span className="pill live">En vivo</span> : !(hero && !played) && <span className={`pill ${played ? "done" : "next"}`}>{played ? "Final" : "Próximo"}</span>}
         <span>{fmtDate(m.date)}{m.time ? ` · ${m.time}` : ""}</span>
         {m.place && <span>· {m.place}</span>}
+        {m.photos?.length > 0 && <span>· 📸 Foto</span>}
         {m.videos?.length > 0 && <span>· 🎥 Video</span>}
       </div>
       <div className="score">

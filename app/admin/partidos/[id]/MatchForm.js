@@ -5,6 +5,7 @@ import Avatar from "@/components/Avatar";
 import InjuryBadge from "@/components/Injury";
 import { createClient } from "@/lib/supabase/client";
 import { displayName } from "@/lib/format";
+import { uploadMatchPhoto } from "@/lib/photo";
 
 export default function MatchForm({ match, players }) {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function MatchForm({ match, players }) {
   });
   const [pick, setPick] = useState({ A: "", B: "" });
   const [mvp, setMvp] = useState(match.mvp_id || "");
+  const [photos, setPhotos] = useState(match.photos || []);
+  const [upl, setUpl] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [confirmDel, setConfirmDel] = useState(false);
@@ -40,6 +43,18 @@ export default function MatchForm({ match, players }) {
   function setAssist(team, ix, as) { setGoals({ ...goals, [team]: goals[team].map((g, i) => (i === ix ? { ...g, as } : g)) }); }
   function rmGoal(team, ix) { setGoals({ ...goals, [team]: goals[team].filter((_, i) => i !== ix) }); }
 
+  async function addPhotos(e) {
+    const files = [...(e.target.files || [])]; e.target.value = "";
+    if (!files.length) return;
+    setUpl(true); setMsg("");
+    try {
+      const supabase = createClient(); const urls = [];
+      for (const file of files) urls.push(await uploadMatchPhoto(supabase, match.id, file));
+      setPhotos((p) => [...p, ...urls]);
+    } catch (err) { setMsg("No se pudo subir la foto. " + (err?.message || "")); }
+    setUpl(false);
+  }
+
   async function save(e) {
     e.preventDefault();
     setBusy(true); setMsg("");
@@ -49,6 +64,7 @@ export default function MatchForm({ match, players }) {
         team_a_name: f.a.trim() || "Equipo 1", team_b_name: f.b.trim() || "Equipo 2",
         mvp_id: played && mvp ? mvp : null, notes: played ? f.notes.trim() || null : null,
         video_urls: f.videos.split(/\s+/).map((u) => u.trim()).filter((u) => /^https?:\/\//.test(u)),
+        photo_urls: photos,
         keeper_email: null };
       let id = match.id;
       if (id) {
@@ -152,12 +168,27 @@ export default function MatchForm({ match, players }) {
         </div>
       )}
       <div className="card stack">
+        <h2 className="sm">📸 Fotos de la juntada</h2>
+        {photos.length > 0 && (
+          <div className="photo-edit">
+            {photos.map((u, i) => (
+              <div className="thumb" key={u}><img src={u} alt={`Foto ${i + 1}`} />
+                <button type="button" className="btn small" aria-label="Sacar foto" onClick={() => setPhotos(photos.filter((x) => x !== u))}>✕</button></div>
+            ))}
+          </div>
+        )}
+        <label className="btn" style={{ alignSelf: "flex-start" }}>{upl ? "Subiendo…" : "📷 Subir foto"}
+          <input type="file" accept="image/*" multiple hidden disabled={upl} onChange={addPhotos} />
+        </label>
+        <span className="muted" style={{ fontSize: 13 }}>Después de subirla, tocá “Guardar partido”.</span>
+      </div>
+      <div className="card stack">
         <label className="f">🎥 Links de YouTube del partido (uno por renglón)
           <textarea rows={3} value={f.videos} onChange={set("videos")} placeholder={"https://youtu.be/...\nhttps://www.youtube.com/watch?v=..."} />
         </label>
       </div>
       <div className="actions">
-        <button className="btn primary" disabled={busy}>{busy ? "Guardando…" : "Guardar partido"}</button>
+        <button className="btn primary" disabled={busy || upl}>{busy ? "Guardando…" : "Guardar partido"}</button>
         {match.id && (confirmDel
           ? <button type="button" className="btn danger" onClick={remove}>Sí, borrar el partido</button>
           : <button type="button" className="btn danger" onClick={() => setConfirmDel(true)}>Borrar partido</button>)}
