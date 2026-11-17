@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import MatchCard from "@/components/MatchCard";
 import Avatar from "@/components/Avatar";
 import Videos from "@/components/Videos";
+import Photos from "@/components/Photos";
 import Confirmados from "@/components/Confirmados";
 import Timeline from "@/components/Timeline";
 import AutoRefresh from "@/components/AutoRefresh";
@@ -30,6 +31,7 @@ export default async function Partido({ params }) {
       {m.status !== "jugado" && !m.live && (
         <Confirmados matchId={m.id} players={m.signups.map((i) => byId[i]).filter(Boolean)} meId={viewer.player?.id || null} loggedIn={!!viewer.user} />
       )}
+      <Photos urls={m.photos} />
       <Videos urls={m.videos} />
       <Timeline m={m} byId={byId} />
       <div className="card lineup">
@@ -37,7 +39,7 @@ export default async function Partido({ params }) {
         <div className="stack"><h2 className="sm">{m.team_b_name}</h2><ul>{list(m.teamB)}</ul></div>
       </div>
       {m.notes && <p className="muted" style={{ margin: 0 }}>{m.notes}</p>}
-      {isAdmin && <div className="actions"><Link className="btn primary" href={`/admin/partidos/${m.id}`}>{m.status === "jugado" ? "Editar resultado / videos" : "Editar partido"}</Link></div>}
+      {isAdmin && <div className="actions"><Link className="btn primary" href={`/admin/partidos/${m.id}`}>{m.status === "jugado" ? "Editar resultado / fotos / videos" : "Editar partido"}</Link></div>}
     </>
   );
 }
