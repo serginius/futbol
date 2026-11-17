@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Avatar from "@/components/Avatar";
 import { createClient } from "@/lib/supabase/client";
 import { displayName } from "@/lib/format";
 import { matchLog, logText } from "@/components/Timeline";
+import { readLocal, writeLocal, clearLocal, keepScreenOn } from "@/lib/liveStore";
 
 const ACTIONS = [
   ["gol", "⚽", "Gol"],
@@ -18,8 +19,9 @@ function minuteNow(startedAt) {
 }
 
 // tok: el código del link de relator (o null si es el admin).
-// practice: modo práctica, no guarda nada y nadie lo ve.
-export default function LivePanel({ match: real, teamA, teamB, byId, tok = null, practice = false, back }) {
+// Todo lo que se anota se guarda en la base al toque, así que recargar,
+// bloquear el celu o abrir desde otro celu no borra nada.
+export default function LivePanel({ match: m, teamA, teamB, byId, tok = null, back }) {
   const router = useRouter();
   const [action, setAction] = useState("gol");
   const [ownGoal, setOwnGoal] = useState(false);
@@ -30,21 +32,49 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState("");
   const [, tick] = useState(0);
-  const [local, setLocal] = useState({ started_at: null, goals: [], events: [] });
+  const [ready, setReady] = useState(false); // ya recuperamos el paso a medio hacer
+  const supabase = useRef(createClient()).current;
+  const playersById = Object.fromEntries([...teamA, ...teamB].map((p) => [p.id, p]));
+  const keyPending = `vivo:${m.id}:${tok ? "link" : "admin"}:paso`;
 
-  // Reloj y datos al día (por si anota otro desde otro celu).
+  // Al abrir: recuperar el paso a medio hacer (ej: gol esperando asistencia).
   useEffect(() => {
+    const p = readLocal(keyPending);
+    if (p) {
+      if (p.action) setAction(p.action);
+      setOwnGoal(!!p.ownGoal);
+      setPenal(!!p.penal);
+      setFinishing(!!p.finishing);
+      if (p.scorerId && playersById[p.scorerId]) setScorer(playersById[p.scorerId]);
+      if (p.foulerId && playersById[p.foulerId]) setFouler(playersById[p.foulerId]);
+    }
+    setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Cada vez que cambia el paso, lo anotamos en el celu.
+  useEffect(() => {
+    if (!ready) return;
+    writeLocal(keyPending, { action, ownGoal, penal, finishing, scorerId: scorer?.id || null, foulerId: fouler?.id || null });
+  }, [ready, keyPending, action, ownGoal, penal, finishing, scorer, fouler]);
+
+  // Reloj y datos al día (por si anota otro desde otro celu). Al volver de
+  // bloquear el celu, se actualiza en el momento.
+  useEffect(() => {
+    const sync = () => { if (document.hidden) return; tick((x) => x + 1); router.refresh(); };
     const t = setInterval(() => tick((x) => x + 1), 15000);
-    const r = setInterval(() => { if (!document.hidden && !practice) router.refresh(); }, 20000);
-    return () => { clearInterval(t); clearInterval(r); };
-  }, [router, practice]);
+    const r = setInterval(sync, 10000);
+    document.addEventListener("visibilitychange", sync);
+    window.addEventListener("focus", sync);
+    return () => { clearInterval(t); clearInterval(r); document.removeEventListener("visibilitychange", sync); window.removeEventListener("focus", sync); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router]);
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(""), 2500); return () => clearTimeout(t); }, [toast]);
 
-  const supabase = createClient();
-  const m = practice ? {
-    ...real, started_at: local.started_at, events: local.events,
-    goalsA: local.goals.filter((g) => g.team === "A"), goalsB: local.goals.filter((g) => g.team === "B"),
-  } : real;
+  // Mientras corre el partido, que no se apague la pantalla.
+  const running = !!m.started_at;
+  useEffect(() => (running ? keepScreenOn() : undefined), [running]);
+
   const backHref = back || `/partidos/${m.id}`;
   const minute = minuteNow(m.started_at);
   const a = m.goalsA.length, b = m.goalsB.length;
@@ -53,29 +83,29 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   const tname = (t) => (t === "A" ? m.team_a_name : m.team_b_name);
 
   async function run(fn, ok) {
-    if (practice) { fn(); if (ok) setToast(ok); return true; }
     setBusy(true);
-    const { error } = await fn();
+    const { data, error } = await fn();
     setBusy(false);
-    if (error) { setToast("No se pudo guardar: " + error.message); return false; }
-    if (ok) setToast(ok);
+    if (error) {
+      const net = /fetch|network|load failed/i.test(error.message || "");
+      setToast(net ? "📶 Sin señal: no se guardó. Probá de nuevo en un toque." : "No se pudo guardar: " + error.message);
+      return false;
+    }
+    // false = el otro relator ya lo había anotado: vale el primero.
+    setToast(data === false ? "👍 Ya lo había anotado el otro relator" : ok || "");
     router.refresh();
     return true;
   }
 
   async function start() {
-    await run(() => practice
-      ? setLocal((x) => ({ ...x, started_at: new Date().toISOString() }))
-      : supabase.rpc("relator_start", { mid: m.id, tok }), "🎙️ ¡Arrancó la transmisión!");
+    await run(() => supabase.rpc("relator_start", { mid: m.id, tok }), "🎙️ ¡Arrancó la transmisión!");
   }
 
   async function saveGoal(player, assist) {
     const team = teamOf(player);
     const scoringTeam = ownGoal ? (team === "A" ? "B" : "A") : team;
     const g = { team: scoringTeam, player_id: player.id, own_goal: ownGoal, assist_id: assist?.id || null, minute };
-    const ok = await run(() => practice
-      ? setLocal((x) => ({ ...x, goals: [...x.goals, { ...g, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
-      : supabase.rpc("relator_goal", { mid: m.id, tok, t: g.team, pid: g.player_id, own: g.own_goal, ast: g.assist_id, mins: minute }), `⚽ Gol de ${displayName(player)}${ownGoal ? " (en contra)" : ""}`);
+    const ok = await run(() => supabase.rpc("relator_goal", { mid: m.id, tok, t: g.team, pid: g.player_id, own: g.own_goal, ast: g.assist_id, mins: minute }), `⚽ Gol de ${displayName(player)}${ownGoal ? " (en contra)" : ""}`);
     if (ok) { setScorer(null); setOwnGoal(false); }
   }
 
@@ -96,26 +126,18 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   async function saveFoul(player, kind) {
     const label = { falta: "🟦 Falta de", amarilla: "🟨 Amarilla a", roja: "🟥 Roja a" }[kind];
     const ev = { team: teamOf(player), player_id: player.id, kind, minute, penalty: penal };
-    const ok = await run(() => practice
-      ? setLocal((x) => ({ ...x, events: [...x.events, { ...ev, id: "p" + Date.now(), created_at: new Date().toISOString() }] }))
-      : supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute, pen: penal }), `${label} ${displayName(player)}${penal ? " · ⚽ ¡PENAL!" : ""}`);
+    const ok = await run(() => supabase.rpc("relator_event", { mid: m.id, tok, t: ev.team, pid: ev.player_id, k: ev.kind, mins: minute, pen: penal }), `${label} ${displayName(player)}${penal ? " · ⚽ ¡PENAL!" : ""}`);
     if (ok) { setFouler(null); setPenal(false); }
   }
 
   async function undo(x) {
     if (!confirm(`¿Borrar "${logText(x, byId)}"?`)) return;
-    const key = x.type === "gol" ? "goals" : "events";
-    await run(() => practice
-      ? setLocal((l) => ({ ...l, [key]: l[key].filter((y) => y.id !== x.id) }))
-      : supabase.rpc("relator_undo", { mid: m.id, tok, is_goal: x.type === "gol", rid: x.id }), "Borrado");
+    await run(() => supabase.rpc("relator_undo", { mid: m.id, tok, is_goal: x.type === "gol", rid: x.id }), "Borrado");
   }
 
   async function finish(mvp) {
-    if (practice) {
-      setLocal({ started_at: null, goals: [], events: [] }); setFinishing(false);
-      setToast("🧪 Fin de la práctica. No se guardó nada."); return;
-    }
     const ok = await run(() => supabase.rpc("relator_finish", { mid: m.id, tok, mvp: mvp?.id || null }));
+    if (ok) clearLocal(keyPending);
     if (ok) router.push(`/partidos/${m.id}`);
   }
 
@@ -133,7 +155,10 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
     return (
       <div className="live-panel">
         <Link href={backHref} className="muted">← Volver</Link>
-        <div className="card">Todavía no están armados los equipos. El admin tiene que cargar quién juega en cada equipo (Admin → partido → "¿Quién juega?").</div>
+        <div className="card stack">
+          <span>Todavía no están armados los equipos. Para relatar, primero cargá quién juega en cada equipo.</span>
+          {!tok && <Link className="btn primary" href={`/admin/partidos/${m.id}`} style={{ justifyContent: "center" }}>👕 Armar los equipos</Link>}
+        </div>
       </div>
     );
   }
@@ -209,7 +234,6 @@ export default function LivePanel({ match: real, teamA, teamB, byId, tok = null,
   return (
     <div className="live-panel">
       <Link href={backHref} className="muted">← Volver</Link>
-      {practice && <div className="practice-note">🧪 <b>Modo práctica.</b> Tocá lo que quieras: no se guarda nada y nadie lo ve.</div>}
       <div className="live-board">
         <div className="team">{m.team_a_name}</div>
         <div className="nums"><span>{a}</span><span className="sep">–</span><span>{b}</span></div>

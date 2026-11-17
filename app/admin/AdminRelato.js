@@ -6,8 +6,8 @@ import LiveLink from "@/components/LiveLink";
 import { createClient } from "@/lib/supabase/client";
 import { fmtDate } from "@/lib/format";
 
-// Relato en vivo: el admin genera un link para que otro cargue el partido sin loguearse,
-// prueba la planilla sin guardar nada, o borra lo cargado.
+// Relato en vivo: el admin relata él mismo (queda guardado), genera un link para
+// que otro cargue el partido sin loguearse, o borra lo cargado.
 export default function AdminRelato({ matches, links }) {
   const router = useRouter();
   const [origin, setOrigin] = useState("");
@@ -58,7 +58,7 @@ export default function AdminRelato({ matches, links }) {
             </div>
             {tok ? (
               <div className="stack" style={{ gap: 8 }}>
-                <span className="muted" style={{ fontSize: 13 }}>Mandale este link al que va a relatar. No necesita Gmail ni cuenta.</span>
+                <span className="muted" style={{ fontSize: 13 }}>Mandale este link a quien quieras. Entra sin Gmail ni cuenta y carga igual que vos. Pueden relatar a la vez: si anotan lo mismo, cuenta una sola vez.</span>
                 <input readOnly value={url} onFocus={(e) => e.target.select()} className="relato-url" />
                 <div className="actions">
                   <button type="button" className="btn small primary" onClick={() => copy(m.id, url)}>📋 Copiar</button>
@@ -72,8 +72,7 @@ export default function AdminRelato({ matches, links }) {
               </button>
             )}
             <div className="actions">
-              <LiveLink className="btn small" href={`/partidos/${m.id}/vivo`}>🎤 Relatar yo</LiveLink>
-              <Link className="btn small" href={`/partidos/${m.id}/vivo?prueba=1`}>🧪 Probar la planilla</Link>
+              <LiveLink className="btn small accent" href={`/partidos/${m.id}/vivo`}>🎤 {m.live ? "Seguir relatando" : "Relatar yo"}</LiveLink>
               {loaded ? <button type="button" className="btn small danger" disabled={busy} onClick={() => reset(m)}>🧹 Volver a cero</button> : null}
             </div>
             {msg[m.id] && <span className="muted" style={{ fontSize: 13 }}>{msg[m.id]}</span>}
