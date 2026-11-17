@@ -58,7 +58,7 @@ export default function AdminRelato({ matches, links }) {
             </div>
             {tok ? (
               <div className="stack" style={{ gap: 8 }}>
-                <span className="muted" style={{ fontSize: 13 }}>Mandale este link al que va a relatar. No necesita Gmail ni cuenta.</span>
+                <span className="muted" style={{ fontSize: 13 }}>Mandale este link a quien quieras. Entra sin Gmail ni cuenta y carga igual que vos. Pueden relatar a la vez: si anotan lo mismo, cuenta una sola vez.</span>
                 <input readOnly value={url} onFocus={(e) => e.target.select()} className="relato-url" />
                 <div className="actions">
                   <button type="button" className="btn small primary" onClick={() => copy(m.id, url)}>📋 Copiar</button>

@@ -63,7 +63,7 @@ export default function LivePanel({ match: m, teamA, teamB, byId, tok = null, ba
   useEffect(() => {
     const sync = () => { if (document.hidden) return; tick((x) => x + 1); router.refresh(); };
     const t = setInterval(() => tick((x) => x + 1), 15000);
-    const r = setInterval(sync, 20000);
+    const r = setInterval(sync, 10000);
     document.addEventListener("visibilitychange", sync);
     window.addEventListener("focus", sync);
     return () => { clearInterval(t); clearInterval(r); document.removeEventListener("visibilitychange", sync); window.removeEventListener("focus", sync); };
@@ -84,14 +84,15 @@ export default function LivePanel({ match: m, teamA, teamB, byId, tok = null, ba
 
   async function run(fn, ok) {
     setBusy(true);
-    const { error } = await fn();
+    const { data, error } = await fn();
     setBusy(false);
     if (error) {
       const net = /fetch|network|load failed/i.test(error.message || "");
       setToast(net ? "📶 Sin señal: no se guardó. Probá de nuevo en un toque." : "No se pudo guardar: " + error.message);
       return false;
     }
-    if (ok) setToast(ok);
+    // false = el otro relator ya lo había anotado: vale el primero.
+    setToast(data === false ? "👍 Ya lo había anotado el otro relator" : ok || "");
     router.refresh();
     return true;
   }
