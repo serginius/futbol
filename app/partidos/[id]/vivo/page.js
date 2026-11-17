@@ -9,7 +9,7 @@ import { practiceTeams } from "@/lib/practice";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "En vivo · Fútbol LSC" };
 
-// Panel EN VIVO para el admin. Con ?prueba=1 es la práctica: no guarda nada.
+// Panel EN VIVO para el admin. Con ?prueba=1 es la práctica: no cuenta para las estadísticas.
 export default async function Vivo({ params, searchParams }) {
   const { id } = await params;
   const { prueba } = await searchParams;
