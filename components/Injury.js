@@ -7,5 +7,5 @@ export function isInjured(p) {
 // Cartelito de lesionado. Se va solo cuando pasa la fecha.
 export default function InjuryBadge({ player, short = false }) {
   if (!isInjured(player)) return null;
-  return <span className="injured">💅 Lesionado{short ? "" : ` · vuelve el ${fmtDate(player.injured_until)}`}</span>;
+  return <span className="injured">🩼 Lesionado{short ? "" : ` · vuelve el ${fmtDate(player.injured_until)}`}</span>;
 }

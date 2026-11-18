@@ -32,7 +32,7 @@ export default function InjuryForm({ player, mine = false }) {
             <button type="button" className="btn small" onClick={() => setOpen(true)}>Cambiar fecha</button>
           </>
         ) : (
-          <button type="button" className="btn small" onClick={() => setOpen(true)}>💅 {mine ? "Estoy lesionado" : "Marcar lesionado"}</button>
+          <button type="button" className="btn small" onClick={() => setOpen(true)}>🩼 {mine ? "Estoy lesionado" : "Marcar lesionado"}</button>
         )}
         {msg && <span className="error">{msg}</span>}
       </div>
