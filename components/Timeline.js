@@ -18,13 +18,13 @@ export function logText(x, byId) {
   return `${ICON[x.type]} ${LABEL[x.type] === "falta" ? "Falta de" : LABEL[x.type] === "amarilla" ? "Amarilla a" : "Roja a"} ${displayName(byId[x.player_id])}${x.penalty ? " · ⚽ penal" : ""}`;
 }
 
+// En el detalle del partido los goles van en "Gol a gol"; acá quedan las faltas y tarjetas.
 export default function Timeline({ m, byId }) {
-  const log = matchLog(m);
-  const hasDetail = log.some((x) => x.minute != null || x.assist_id || x.type !== "gol");
-  if (!log.length || !hasDetail) return null;
+  const log = matchLog(m).filter((x) => x.type !== "gol");
+  if (!log.length) return null;
   return (
     <section className="sec">
-      <h2>Minuto a minuto</h2>
+      <h2>Faltas y tarjetas</h2>
       <div className="card">
         <ul className="timeline">
           {log.map((x) => (

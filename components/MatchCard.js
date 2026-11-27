@@ -65,8 +65,11 @@ export default function MatchCard({ m, byId, hero = false, link = true }) {
         )}
         <div className="team b">{m.team_b_name}</div>
       </div>
-      {showScore && (a > 0 || b > 0) && (
+      {showScore && (a > 0 || b > 0) && link && (
         <div className="scorers"><div>{scorersText(m.goalsA, byId)}</div><div>{scorersText(m.goalsB, byId)}</div></div>
+      )}
+      {played && !link && (
+        <div className="win">{a === b ? "🤝 Empate" : `🏆 Ganó ${a > b ? m.team_a_name : m.team_b_name}`}</div>
       )}
       {!played && !live && (hero || !link) && d >= 0 && <Countdown date={m.date} time={m.time} />}
       {!played && !live && <div className="muted" style={{ fontSize: 13 }}>{(() => { const n = Math.max(m.signups?.length || 0, m.teamA.length + m.teamB.length); return `${n} confirmado${n === 1 ? "" : "s"}`; })()}</div>}
